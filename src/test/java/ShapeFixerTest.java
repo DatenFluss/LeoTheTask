@@ -28,6 +28,20 @@ public class ShapeFixerTest {
     }
 
     @Test
+    public void testSegmentThroughVertexIntersection() {
+        // Create invalid shape
+        Shape2D square = createShape(
+                new Point2D(0, 0), new Point2D(2, 0),
+                new Point2D(4, 0), new Point2D(4, 2),
+                new Point2D(2, 2), new Point2D(2, 1),
+                new Point2D(2, 4), new Point2D(0, 4),
+                new Point2D(0, 0)
+        );
+
+        assertFalse(shapeFixer.isValid(square), "Shape presented as an invalid convex polygon");
+    }
+
+    @Test
     public void testInvalidOpenShape() {
         // Create an invalid shape that is not closed
         Shape2D openShape = createShape(

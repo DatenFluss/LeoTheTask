@@ -25,13 +25,14 @@ public class ShapeFixer {
 
         // Check for self-intersections
         for (int i = 0; i < shape.points.size() - 1; i++) {
-            for (int j = i + 2; j < shape.points.size() - 1; j++) {
-                if (intersect(shape.points.get(i), shape.points.get(i + 1), shape.points.get(j), shape.points.get(j + 1))) {
+            for (int j = i + 1; j < shape.points.size() - 1; j++) {
+                if (i == 0 && j == shape.points.size() - 2) continue; // Skip checking first and last segment
+                if (intersect(shape.points.get(i), shape.points.get(i + 1),
+                        shape.points.get(j), shape.points.get(j + 1))) {
                     return false;
                 }
             }
         }
-
         return true;
     }
 
@@ -54,13 +55,18 @@ public class ShapeFixer {
     }
 
     private boolean intersect(Point2D p1, Point2D p2, Point2D p3, Point2D p4) {
+        // Check if the line segments share an endpoint
+        if (p1.equals(p3) || p1.equals(p4) || p2.equals(p3) || p2.equals(p4)) {
+            return false;
+        }
+
         double d = (p2.x - p1.x) * (p4.y - p3.y) - (p2.y - p1.y) * (p4.x - p3.x);
-        if (d == 0) return false;
+        if (Math.abs(d) < 1e-10) return false; // parallel lines
 
         double t = ((p3.x - p1.x) * (p4.y - p3.y) - (p3.y - p1.y) * (p4.x - p3.x)) / d;
         double u = -((p2.x - p1.x) * (p3.y - p1.y) - (p2.y - p1.y) * (p3.x - p1.x)) / d;
 
-        return t > 0 && t < 1 && u > 0 && u < 1;
+        return t >= 0 && t <= 1 && u >= 0 && u <= 1;
     }
 
     private boolean hasSelfIntersections(List<Point2D> points) {
